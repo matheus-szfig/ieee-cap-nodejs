@@ -1,17 +1,22 @@
-const verify = require("jsonwebtoken");
+const jwt = require("jsonwebtoken");
 
 function AuthJWT (req, res, next) {
   try{
-    const token = req.body.jwt;
+    const token = req.body.token;
 
     if(!token) throw new Error('Invalid token!');
 
-    const auth = verify(token, process.env.JWT_KEY)
-
+    const auth = jwt.verify(token, process.env.JWT_KEY)
+    
+    if(!auth) throw new Error('Invalid token')
+    
+    next();
   }catch(e){
     res.send({
       status:false,
-      message:e.message
+      message:'Invalid token'
     })
   }
 }
+
+module.exports = AuthJWT;

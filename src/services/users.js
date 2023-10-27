@@ -46,7 +46,7 @@ async function userLogin ({email, senha}) {
     const valid = bcrypt.compareSync(senha, user.password);
     if(!valid) throw new Error('Senha incorreta');
 
-    return sign(user, process.JWT_KEY);
+    return sign(user, process.env.JWT_KEY);
   }catch(e){
     throw e;
   }
