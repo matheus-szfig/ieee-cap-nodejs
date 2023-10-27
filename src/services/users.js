@@ -37,8 +37,41 @@ async function getUserAll () {
   }
 }
 
+async function updateUser(id, email, nome, senha) {
+  try {
+    const user = await knex('users').select('*').where({id})
+    if(!user)
+      throw new Error("Usuário não existe");
+    
+      const salt = bcrypt.genSaltSync();
+      const hash = bcrypt.hashSync(senha, salt);
+
+      await knex('users').update({
+        name: nome,
+        password: hash
+      }).where({id})
+
+  }catch(e){
+    throw e;
+  }
+}
+
+async function deleteUser(id) {
+  try {
+    const user = await knex('users').select('*').where({id})
+    if(!user)
+      throw new Error("Usuário não existe");
+    
+    await knex('users').where({id}).delete()
+  }catch(e){
+    throw e;
+  }
+}
+
 module.exports = {
   createUser,
   getUser,
-  getUserAll
+  getUserAll,
+  updateUser,
+  deleteUser
 }

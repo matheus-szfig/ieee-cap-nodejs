@@ -1,4 +1,4 @@
-const { createUser, getUser, getUserAll } = require('../services/users');
+const { createUser, getUser, getUserAll, updateUser, deleteUser } = require('../services/users');
 
 const userRouter = require('express').Router();
 
@@ -33,12 +33,31 @@ userRouter.get('/:id?', async (req, res) => {
   }
 });
 
-userRouter.put('/:id', (req, res) => {
-  console.log('user update');
+userRouter.put('/:id', async (req, res) => {
+  const { id } = req.params;
+  const { nome, email, senha } = req.body;
+  try {
+    const user = await updateUser(id, email, nome, senha);
+    res.send({status:true, data:user});
+  }catch(e){
+    res.send({
+      status:false,
+      message:e.message
+    })
+  }
 });
 
-userRouter.delete('/:id', (req, res) => {
-  console.log('user delete', req.params.id);
+userRouter.delete('/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const user = await deleteUser(id);
+    res.send({status:true, data:user});
+  }catch(e){
+    res.send({
+      status:false,
+      message:e.message
+    })
+  }
 });
 
 module.exports = userRouter;
