@@ -1,14 +1,35 @@
+const { createUser, getUser, getUserAll } = require('../services/users');
+
 const userRouter = require('express').Router();
 
-userRouter.post('/', (req, res) => {
-  console.log('user create')
+userRouter.post('/', async (req, res) => {
+  try{
+  const fields = ['nome', 'email', 'senha'];
+  const valid = fields.reduce((acc, f) => (acc && !!req.body[f]), true);
+
+  if(!valid) throw new Error('Solicitação inválida.')
+
+  await createUser(req.body);
+
+  res.send({
+    status:true
+  })
+
+  }catch(e){
+    res.send({
+      status:false,
+      message:e.message
+    })
+  }
 });
 
-userRouter.get('/:id', (req, res) => {
+userRouter.get('/:id?', async (req, res) => {
   if(!!req.params.id){
-    res.send('user get');
+    const user = await getUser(req.params);
+    res.send({status:true, data:user});
   }else{
-    res.send('user get all')
+    const users = await getUserAll();
+    res.send({status:true, data:users});
   }
 });
 
