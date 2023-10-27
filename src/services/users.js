@@ -1,3 +1,4 @@
+const { sign } = require("jsonwebtoken");
 const knex = require("../config/database");
 const bcrypt = require('bcryptjs');
 
@@ -37,8 +38,23 @@ async function getUserAll () {
   }
 }
 
+async function userLogin ({email, senha}) {
+  try{
+    const users = await knex('users').select('*').where({email:email});
+    if(users.length <= 0) throw new Error('Email não encontrado!');
+    const user = users[0];
+    const valid = bcrypt.compareSync(senha, user.password);
+    if(!valid) throw new Error('Senha incorreta');
+
+    return sign(user, process.JWT_KEY);
+  }catch(e){
+    throw e;
+  }
+}
+
 module.exports = {
   createUser,
   getUser,
-  getUserAll
+  getUserAll,
+  userLogin
 }
