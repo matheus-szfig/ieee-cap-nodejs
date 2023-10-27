@@ -1,4 +1,5 @@
-const { createUser, getUser, getUserAll, updateUser, deleteUser } = require('../services/users');
+const { createUser, getUser, getUserAll, updateUser, deleteUser, userLogin } = require('../services/users');
+const knex = require('knex');
 
 const userRouter = require('express').Router();
 
@@ -24,6 +25,8 @@ userRouter.post('/', async (req, res) => {
 });
 
 userRouter.get('/:id?', async (req, res) => {
+  try{
+    
   if(!!req.params.id){
     const user = await getUser(req.params);
     res.send({status:true, data:user});
@@ -31,6 +34,12 @@ userRouter.get('/:id?', async (req, res) => {
     const users = await getUserAll();
     res.send({status:true, data:users});
   }
+}catch(e){
+  res.send({
+    status:false,
+    message:e.message
+  })
+}
 });
 
 userRouter.put('/:id', async (req, res) => {
@@ -59,5 +68,25 @@ userRouter.delete('/:id', async (req, res) => {
     })
   }
 });
+
+userRouter.post('/login', async (req, res) => {
+  try{
+    const fields = ['email', 'senha'];
+    const valid = fields.reduce((acc, f) => (acc && !!req.body[f]), true);
+  
+    if(!valid) throw new Error('Solicitação inválida.')
+
+    const token = await userLogin(req.body);
+    res.send({
+      status:true,
+      data:{token}
+    })
+  }catch(e){
+    res.send({
+      status:false,
+      message:e.message
+    })
+  }
+})
 
 module.exports = userRouter;
