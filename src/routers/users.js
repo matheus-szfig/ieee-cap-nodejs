@@ -4,7 +4,7 @@ userRouter.post('/', (req, res) => {
   console.log('user create')
 });
 
-userRouter.get('/:id(\\d+)?', (req, res) => {
+userRouter.get('/:id', (req, res) => {
   if(!!req.params.id){
     res.send('user get');
   }else{
