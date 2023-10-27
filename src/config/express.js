@@ -1,7 +1,10 @@
-const app = require('express')();
+const express = require('express')
+const app = express();
+const router = require('../routers')
 
-app.get('/', (req, res, next) => {
-  res.send('Hello world');
-})
+app.use(express.json());
+app.use(express.urlencoded({extended:true}));
+
+app.use(router);
 
 module.exports = app;
